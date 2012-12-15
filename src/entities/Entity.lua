@@ -28,6 +28,10 @@ function Entity:getCenter()
   return self.l + self.w*0.5, self.t + self.h*0.5
 end
 
+function Entity:isOpaque()
+  return true -- by default, everything is opaque
+end
+
 function Entity:draw()
   love.graphics.setColor(255,0,0)
   love.graphics.rectangle('line', self:getBBox())
