@@ -4,7 +4,8 @@ local entities = require.tree 'entities'
 
 local rand     = math.random
 
-local World = class('World')
+local World    = class('World')
+local onScreen = {}
 
 local WIDTH, HEIGHT = 4000,4000
 local MAX_TILE_W, MAX_TILE_H = 200,200
@@ -20,10 +21,9 @@ function World:initialize()
   end
 
   for i=1,40 do
-    entities.Enemy:new(rand(100, WIDTH-100),
-                       rand(100, HEIGHT-100),
-                       45,
-                       self.player)
+    entities.Knight:new(rand(100, WIDTH-100),
+                        rand(100, HEIGHT-100),
+                        self.player)
   end
 end
 
@@ -46,17 +46,20 @@ local function sortForDrawing(a,b)
 end
 
 function World:draw(l,t,w,h)
-  local visibles, length = {}, 0
+  onScreen = {}
+  local length = 0
   bump.eachInRegion(l,t,w,h, function(item)
     length = length + 1
-    visibles[length] = item
+    onScreen[length] = item
   end)
-  table.sort(visibles, sortForDrawing)
-  for _,visible in ipairs(visibles) do visible:draw() end
+  table.sort(onScreen, sortForDrawing)
+  for _,visible in ipairs(onScreen) do visible:draw() end
 end
 
 function World:update(dt, l,t,w,h)
-  bump.eachInRegion(l,t,w,h, function(item) item:update(dt) end)
+  bump.eachInRegion(l,t,w,h, function(item)
+    item:update(dt, onScreen)
+  end)
   bump.collide()
 end
 
