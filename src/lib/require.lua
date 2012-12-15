@@ -38,7 +38,7 @@ function require.tree(requirePath)
 end
 
 function require.path(filePath)
-  return noEndDot(noExtension(filePath):match(".-[^%.]*$"))
+  return noEndDot(noExtension(filePath):match("(.-)[^%.]*$"))
 end
 
 function require.relative(...)

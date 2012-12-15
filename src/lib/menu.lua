@@ -40,6 +40,7 @@ function Button:initialize(label,x,y,callback)
 end
 
 function Button:draw()
+  love.graphics.setColor(255,255,255)
   love.graphics.rectangle('line', self.x, self.y, buttonWidth, buttonHeight)
   love.graphics.printf(self.label, self.x, getFontY(self), buttonWidth, 'center')
 end
