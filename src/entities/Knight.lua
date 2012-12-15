@@ -21,13 +21,11 @@ end
 
 
 local Idle = Knight:addState('Idle')
-function Idle:update(dt, visibles)
-  self:lookAround(visibles)
+function Idle:think()
   if self.seen[self.target] then
     self.tx, self.ty = self.target:getCenter()
     self:gotoState('Pursuing')
   end
-  AI.update(self,dt)
 end
 
 
@@ -38,8 +36,7 @@ function Pursuing:enteredState()
   cron.tagged(self, 'pursue').after(10, function() self:gotoState('Idle') end)
 end
 
-function Pursuing:update(dt, visibles)
-  self:lookAround(visibles)
+function Pursuing:think()
   if self.seen[self.target] then
     cron.tagged(self, 'pursue').cancel()
     cron.tagged(self, 'pursue').after(10, function() self:gotoState('Idle') end)
@@ -49,7 +46,6 @@ function Pursuing:update(dt, visibles)
       self:gotoState('Attacking')
     end
   end
-  AI.update(self,dt)
 end
 
 
@@ -57,7 +53,10 @@ local Attacking = Knight:addState('Attacking')
 function Attacking:getColor() return 255,0,0 end
 
 function Attacking:enteredState()
-  self.blow = Blow:new(self, self.target)
+  local cx, cy = self:getCenter()
+  local tx, ty = self.target:getCenter()
+  local x,y = cx + (tx-cx)/2, cy + (ty-cy)/2
+  self.blow = Blow:new(self, x,y)
   cron.tagged(self, 'blow').after(0.5, function() self:gotoState('Pursuing') end)
 end
 

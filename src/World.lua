@@ -25,6 +25,12 @@ function World:initialize()
                         rand(100, HEIGHT-100),
                         self.player)
   end
+
+  for i=1,50 do
+    entities.Archer:new(rand(100, WIDTH-100),
+                        rand(100, HEIGHT-100),
+                        self.player)
+  end
 end
 
 function World:getBoundaries()

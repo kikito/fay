@@ -29,8 +29,8 @@ function Being:setTarget(tx,ty)
   self.tx, self.ty = tx,ty
 end
 
-function Being:shouldCollide()
-  return true
+function Being:shouldCollide(other)
+  return self:isSolid() and other:isSolid()
 end
 
 function Being:collision(other, dx, dy)

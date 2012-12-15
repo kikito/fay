@@ -41,6 +41,12 @@ function AI:lookAround(visibles)
   end
 end
 
+function AI:update(dt, visibles)
+  self:lookAround(visibles)
+  self:think()
+  Being.update(self, dt)
+end
+
 function AI:getDesiredMovementVector()
   local dx,dy = Being.getDesiredMovementVector(self)
   return dx*1000, dy*1000 -- AI always runs at the hightest speed

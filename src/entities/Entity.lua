@@ -33,6 +33,10 @@ function Entity:isOpaque()
   return true -- by default, everything is opaque
 end
 
+function Entity:isSolid()
+  return true -- for now it only worls for stucking arrows
+end
+
 function Entity:vectorTo(other)
   local cx,cy = self:getCenter()
   local ox,oy = other:getCenter()
