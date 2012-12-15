@@ -9,30 +9,7 @@ local World = class('World')
 local WIDTH, HEIGHT = 4000,4000
 local MAX_TILE_W, MAX_TILE_H = 200,200
 
-local function initializeBump()
-  bump.initialize(16)
-
-  function bump.collision(obj1,obj2,dx,dy)
-    obj1:collision(obj2,dx,dy)
-    obj2:collision(obj1,-dx,-dy)
-  end
-
-  function bump.endCollision(obj1,obj2)
-    obj1:endCollision(obj2)
-    obj2:endCollision(obj1)
-  end
-
-  function bump.getBBox(obj)
-    return obj:getBBox()
-  end
-
-  function bump.shouldCollide(obj1,obj2)
-    return obj1:shouldCollide(obj2) or obj2:shouldCollide(obj1)
-  end
-end
-
 function World:initialize()
-  initializeBump()
   self.player = entities.Player:new(100,100)
   for i=1,50 do
     entities.Tile:new(rand(0, WIDTH-MAX_TILE_W),
@@ -48,6 +25,7 @@ end
 
 function World:destroy()
   self.player = nil
+  entities.Entity:safeEach('destroy')
 end
 
 local function sortForDrawing(a,b)
@@ -60,17 +38,13 @@ local function sortForDrawing(a,b)
 end
 
 function World:draw(l,t,w,h)
-  love.graphics.setColor(255, 255, 255)
-  love.graphics.rectangle('line', l,t,w,h)
   local visibles, length = {}, 0
   bump.eachInRegion(l,t,w,h, function(item)
     length = length + 1
     visibles[length] = item
   end)
   table.sort(visibles, sortForDrawing)
-  for _,visible in ipairs(visibles) do
-    visible:draw()
-  end
+  for _,visible in ipairs(visibles) do visible:draw() end
 end
 
 function World:update(dt, l,t,w,h)

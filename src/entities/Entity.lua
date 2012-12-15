@@ -3,12 +3,9 @@ local Each = require 'lib.each'
 
 local Entity = class('Entity'):include(Each)
 
-local DEFAULT_WIDTH = 16
-local DEFAULT_HEIGHT = 16
 
-function Entity:initialize(x,y,w,h)
-  self.w, self.h = w or DEFAULT_WIDTH, h or DEFAULT_HEIGHT
-  self.l, self.t = x - self.w / 2, y - self.h / 2
+function Entity:initialize(l,t,w,h)
+  self.l, self.t, self.w, self.h = l,t,w,h
   self.class:add(self)
   bump.add(self)
 end
@@ -19,6 +16,12 @@ end
 
 function Entity:shouldCollide(other)
   return false
+end
+
+function Entity:collision(other, dx,dy)
+end
+
+function Entity:endCollision(other)
 end
 
 function Entity:getCenter()

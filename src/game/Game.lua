@@ -1,13 +1,10 @@
 local Stateful    = require 'lib.stateful'
 local beholder    = require 'lib.beholder'
 
-local Config  = require 'game.Config'
-
 local Game = class('Game'):include(Stateful)
 
 function Game:initialize(identity)
   love.filesystem.setIdentity(identity)
-  self.config = Config:new()
   self:gotoState('Loading') -- go to the first state here, if you want
   beholder.observe('keypressed', 'escape', function()
     self:escape()

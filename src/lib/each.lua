@@ -7,7 +7,7 @@ local function clone(t)
 end
 
 local function add(klass, instance)
-  if klass ~= Object then
+  if includes(Each, klass) then
     add(klass.super, instance)
     klass._instances = klass._instances or {}
     klass._instances[instance] = 1
