@@ -1,8 +1,9 @@
-local bump = require 'lib.bump'
-local Each = require 'lib.each'
+local bump      = require 'lib.bump'
+local cron      = require 'lib.cron'
+local Each      = require 'lib.each'
+local Stateful  = require 'lib.stateful'
 
-local Entity = class('Entity'):include(Each)
-
+local Entity = class('Entity'):include(Each, Stateful)
 
 function Entity:initialize(l,t,w,h)
   self.l, self.t, self.w, self.h = l,t,w,h
@@ -32,6 +33,13 @@ function Entity:isOpaque()
   return true -- by default, everything is opaque
 end
 
+function Entity:vectorTo(other)
+  local cx,cy = self:getCenter()
+  local ox,oy = other:getCenter()
+  local dx,dy = ox-cx, oy-cy
+  return dx,dy, math.sqrt(dx*dx + dy*dy)
+end
+
 function Entity:draw()
   love.graphics.setColor(255,0,0)
   love.graphics.rectangle('line', self:getBBox())
@@ -43,6 +51,7 @@ end
 function Entity:destroy()
   bump.remove(self)
   self.class:remove(self)
+  cron.tagged(self).cancel()
 end
 
 

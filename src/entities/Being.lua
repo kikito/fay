@@ -14,7 +14,7 @@ local function truncateVector(maxL, x,y)
   local len = vectorLength(x,y)
   if abs(len) < 1 then return 0,0 end
   local s = maxL / len
-  s = s > 1 and s or 1
+  s = s < 1 and s or 1
   return x*s, y*s
 end
 
@@ -39,7 +39,8 @@ end
 
 function Being:getDesiredMovementVector()
   local cx,cy = self:getCenter()
-  return self.tx - cx, self.ty - cy
+  local dx,dy = self.tx - cx, self.ty - cy
+  return dx*2, dy*2
 end
 
 function Being:isOpaque()
