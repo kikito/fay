@@ -25,7 +25,7 @@ function Being:shouldCollide()
   return true
 end
 
-function Being:collide(other, dx, dy)
+function Being:collision(other, dx, dy)
   self.l, self.t = self.l + dx, self.t + dy
 end
 
