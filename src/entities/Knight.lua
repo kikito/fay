@@ -53,10 +53,6 @@ local Attacking = Knight:addState('Attacking')
 function Attacking:getColor() return 255,0,0 end
 
 function Attacking:enteredState()
-  local cx, cy = self:getCenter()
-  local tx, ty = self.target:getCenter()
-  local x,y = cx + (tx-cx)/2, cy + (ty-cy)/2
-  self.blow = Blow:new(self, x,y)
   cron.tagged(self, 'blow').after(0.5, function() self:gotoState('Pursuing') end)
 end
 
@@ -65,8 +61,10 @@ function Attacking:update(dt)
 end
 
 function Attacking:exitedState()
-  self.blow:destroy()
-  self.blow = nil
+  local cx, cy = self:getCenter()
+  local tx, ty = self.target:getCenter()
+  local x,y = cx + (tx-cx)/2, cy + (ty-cy)/2
+  Blow:new(self, x,y)
 end
 
 return Knight

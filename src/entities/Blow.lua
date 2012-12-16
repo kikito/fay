@@ -1,3 +1,5 @@
+local cron = require 'lib.cron'
+
 local Entity = require.relative(..., 'Entity')
 
 local Blow = class('Blow', Entity)
@@ -7,6 +9,7 @@ function Blow:initialize(origin, x,y ,w,h)
   w,h = w or DEFAULT_W, h or DEFAULT_H
   Entity.initialize(self, x-w/2,y-w/2,w,h)
   self.origin = origin
+  cron.after(0.3, function() self:destroy() end)
 end
 
 function Blow:isOpaque()
