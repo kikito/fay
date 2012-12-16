@@ -80,6 +80,14 @@ end
 
 local Shooting = Archer:addState('Shooting')
 function Shooting:getColor() return 255,0,0 end
+
+function Shooting:draw()
+  Archer.draw(self)
+  love.graphics.setColor(200,200,200,100)
+  local cx, cy = self:getCenter()
+  love.graphics.line(cx,cy, self.tx, self.ty)
+end
+
 function Shooting:enteredState()
   cron.tagged(self, 'shoot').after(2.5, function()
     Arrow:new(self, self.target)

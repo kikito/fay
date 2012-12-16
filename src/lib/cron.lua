@@ -136,7 +136,8 @@ function cron.cancel(id)
   entries[id] = nil
   if id.tags then
     for i=1, #id.tags do
-      taggedEntries[id.tags[i]][id] = nil
+      local x = taggedEntries[id.tags[i]]
+      if x then x [id] = nil end
     end
   end
 end
