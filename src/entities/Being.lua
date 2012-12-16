@@ -72,9 +72,9 @@ end
 local Dead = Being:addState('Dead')
 
 function Dead:enteredState()
-  print("dead", self)
   cron.tagged(self).cancel()
   cron.tagged(self).after(5, function() self:destroy() end)
+  self.dead = true
 end
 
 function Dead:shouldCollide() return false end

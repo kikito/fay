@@ -5,9 +5,10 @@ local Blow = require.relative(..., 'Blow')
 
 local Knight = class('Knight', AI)
 
-function Knight:initialize(x,y,target)
+function Knight:initialize(x,y, primaryTarget)
   AI.initialize(self, x,y, 60)
-  self.target = target
+  self.primaryTarget = primaryTarget -- this never changes (usually, the player)
+  self.target = primaryTarget
   self:gotoState('Idle')
 end
 
@@ -19,6 +20,23 @@ function Knight:draw()
   love.graphics.circle('line', cx,cy, self.w/2)
 end
 
+function Knight:blow(other)
+  self.energy = self.energy - 0.25
+  if self.energy < 0 then
+    self:die()
+  else
+    self:gotoState('Pursuing')
+    self.target = other
+  end
+end
+
+function Knight:lookAround(visibles)
+  AI.lookAround(self, visibles)
+  if self.seen[self.target] and self.target.dead then
+    self.target = self.primaryTarget
+    self:gotoState('Idle')
+  end
+end
 
 local Idle = Knight:addState('Idle')
 function Idle:think()

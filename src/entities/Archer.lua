@@ -21,6 +21,24 @@ function Archer:draw()
   love.graphics.rectangle('line', self:getBBox())
 end
 
+function Archer:blow(other)
+  self.energy = self.energy - 0.34
+  if self.energy < 0 then
+    self:die()
+  else
+    self:gotoState('Pursuing')
+    self.target = other
+  end
+end
+
+function Archer:lookAround(visibles)
+  AI.lookAround(self, visibles)
+  if self.seen[self.target] and self.target.dead then
+    self.target = self.primaryTarget
+    self:gotoState('Idle')
+  end
+end
+
 local Idle = Archer:addState('Idle')
 function Idle:think()
   if self.seen[self.target] then
