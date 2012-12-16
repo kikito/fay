@@ -1,3 +1,4 @@
+local beholder    = require 'lib.beholder'
 local gamera      = require 'lib.gamera'
 local bump        = require 'lib.bump'
 --local bump_debug  = require 'lib.bump_debug'
@@ -7,7 +8,7 @@ local Play        = Game:addState('Play')
 
 local World       = require 'World'
 
-local world, cam
+local world, cam, gameOverEventId
 
 local function initializeBump()
   bump.initialize(64)
@@ -33,13 +34,17 @@ end
 
 function Play:enteredState()
   initializeBump()
-  world  = World:new()
-  cam    = gamera.new(World:getBoundaries())
+  world            = World:new()
+  cam              = gamera.new(World:getBoundaries())
+  gameOverEventId  = beholder.observe('gameover', function()
+    self:gotoState('GameOver')
+  end)
 end
 
 function Play:exitedState()
   world:destroy()
-  world, cam = nil, nil, nil
+  beholder.stopObserving(gameOverEventId)
+  world, cam, gameOverEventId = nil, nil, nil
 end
 
 
@@ -56,7 +61,7 @@ end
 function Play:update(dt)
   world.player:setTarget(cam:toWorld(love.mouse.getPosition()))
   world:update(dt, cam:getVisible())
-  cam:setPosition(world.player:getCenter())
+  if cam then cam:setPosition(world.player:getCenter()) end
 end
 
 function Play:escape()

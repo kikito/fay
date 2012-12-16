@@ -1,3 +1,5 @@
+local cron   = require 'lib.cron'
+
 local Entity = require.relative(..., 'Entity')
 
 local Being = class('Being', Entity)
@@ -23,6 +25,7 @@ function Being:initialize(x,y,w,h,speed)
   Entity.initialize(self, x-w/2, y-w/2, w, h)
   self.speed = speed or DEFAULT_SPEED
   self.tx, self.ty = x,y -- next destination
+  self.energy = 1
 end
 
 function Being:setTarget(tx,ty)
@@ -57,6 +60,37 @@ function Being:update(dt)
   local dx, dy = truncateVector(self.speed, self:getDesiredMovementVector())
   self.l, self.t = self.l + dx*dt, self.t + dy*dt
 end
+
+function Being:blow(other)
+  self:die() -- By default, die in one hit
+end
+
+function Being:die()
+  self:gotoState('Dead')
+end
+
+local Dead = Being:addState('Dead')
+
+function Dead:enteredState()
+  print("dead", self)
+  cron.tagged(self).cancel()
+  cron.tagged(self).after(5, function() self:destroy() end)
+end
+
+function Dead:shouldCollide() return false end
+function Dead:isSolid() return false end
+
+function Dead:draw()
+  local l,t,w,h = self:getBBox()
+  love.graphics.setColor(100,100,100)
+  love.graphics.line(l,t,l+w,t+h)
+  love.graphics.line(l,t+h,l+w,t)
+end
+function Dead:update()
+end
+
+
+
 
 return Being
 

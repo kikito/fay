@@ -1,5 +1,6 @@
 local cron = require 'lib.cron'
 
+local Being  = require.relative(..., 'Being')
 local Entity = require.relative(..., 'Entity')
 
 local Blow = class('Blow', Entity)
@@ -12,6 +13,10 @@ function Blow:initialize(origin, x,y ,w,h)
   cron.after(0.3, function() self:destroy() end)
 end
 
+function Blow:shouldCollide(other)
+  return other:isSolid()
+end
+
 function Blow:isOpaque()
   return false
 end
@@ -19,6 +24,15 @@ end
 function Blow:draw()
   love.graphics.setColor(255,0,0)
   love.graphics.rectangle('line', self:getBBox())
+end
+
+function Blow:collision(other)
+  if other ~= self.origin then
+    if instanceOf(Being, other) and other:isSolid() then
+      other:blow(self.origin)
+      self:destroy()
+    end
+  end
 end
 
 return Blow
