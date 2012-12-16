@@ -38,6 +38,12 @@ function Knight:lookAround(visibles)
   end
 end
 
+function Knight:attack(x,y)
+  self.attackX, self.attackY = x,y
+  self:pushState('Attacking')
+end
+
+
 local Idle = Knight:addState('Idle')
 function Idle:think()
   if self.seen[self.target] then
@@ -61,7 +67,7 @@ function Pursuing:think()
     self.tx, self.ty = self.target:getCenter()
     local _,_,d = self:vectorTo(self.target)
     if d < 40 then
-      self:gotoState('Attacking')
+      self:attack(self.tx, self.ty)
     end
   end
 end
@@ -71,7 +77,15 @@ local Attacking = Knight:addState('Attacking')
 function Attacking:getColor() return 255,0,0 end
 
 function Attacking:enteredState()
-  cron.tagged(self, 'blow').after(0.5, function() self:gotoState('Pursuing') end)
+  cron.tagged(self, 'blow').after(0.5, function()
+    local cx, cy = self:getCenter()
+    local tx, ty = self.attackX, self.attackY
+    local dx, dy = tx-cx, ty-cy
+    local m = math.max(self.w, self.h) / math.sqrt(dx*dx + dy*dy)
+    local x,y = cx + dx*m, cy+dy*m
+    Blow:new(self, x,y)
+    self:popState('Attacking')
+  end)
 end
 
 function Attacking:update(dt)
@@ -79,10 +93,7 @@ function Attacking:update(dt)
 end
 
 function Attacking:exitedState()
-  local cx, cy = self:getCenter()
-  local tx, ty = self.target:getCenter()
-  local x,y = cx + (tx-cx)/2, cy + (ty-cy)/2
-  Blow:new(self, x,y)
+  cron.tagged(self, 'blow').cancel()
 end
 
 return Knight

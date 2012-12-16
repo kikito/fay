@@ -39,6 +39,11 @@ function Archer:lookAround(visibles)
   end
 end
 
+function Archer:attack(x,y)
+  self.attackX, self.attackY = x,y
+  self:pushState('Shooting')
+end
+
 local Idle = Archer:addState('Idle')
 function Idle:think()
   if self.seen[self.target] then
@@ -48,7 +53,7 @@ function Idle:think()
     elseif d > PURSUING_D then
       self:gotoState('Pursuing')
     else
-      self:gotoState('Shooting')
+      self:attack(self.target:getCenter())
     end
   end
 end
@@ -67,7 +72,7 @@ function Fleeing:think()
     if d > PURSUING_D then
       self:gotoState('Pursuing')
     else
-      self:gotoState('Shooting')
+      self:attack(self.target:getCenter())
     end
   end
 end
@@ -91,7 +96,7 @@ function Pursuing:think()
       self:gotoState('Fleeing')
     elseif d > PURSUING_D then return
     else
-      self:gotoState('Shooting')
+      self:attack(self.target:getCenter())
     end
   end
 end
@@ -103,31 +108,28 @@ function Shooting:draw()
   Archer.draw(self)
   love.graphics.setColor(200,200,200,100)
   local cx, cy = self:getCenter()
-  love.graphics.line(cx,cy, self.tx, self.ty)
+  love.graphics.line(cx,cy, self.attackX, self.attackY)
 end
 
 function Shooting:enteredState()
   cron.tagged(self, 'shoot').after(2.5, function()
-    Arrow:new(self, self.target)
-    self:gotoState('Pursuing')
+    Arrow:new(self, self.attackX, self.attackY)
+    self:popState('Shooting')
   end)
 end
 function Shooting:think()
   if self.seen[self.target] then
     self.tx, self.ty = self.target:getCenter()
     local _,_,d = self:vectorTo(self.target)
-    if d < FLEEING_D then
-      cron.tagged(self, 'shoot').cancel()
-      self:gotoState('Fleeing')
-    elseif d > PURSUING_D then
-      cron.tagged(self, 'shoot').cancel()
-      self:gotoState('Pursuing')
+    if d < FLEEING_D or d > PURSUING_D then
+      self:popState('Shooting')
     end
-  else
-    cron.tagged(self, 'shoot').cancel()
-    self:gotoState('Pursuing')
   end
 end
+function Shooting:exitedState()
+  cron.tagged(self, 'shoot').cancel()
+end
+
 function Shooting:getDesiredMovementVector()
   return 0,0 -- don't move while shooting
 end

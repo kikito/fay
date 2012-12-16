@@ -18,6 +18,10 @@ function Fay:blow(other)
   if self.energy <= 0 then
     self:die()
   end
+  self:resetHealingCounter()
+end
+
+function Fay:resetHealingCounter()
   cron.tagged(self, 'heal').cancel()
   cron.tagged(self, 'heal').after(5, function() self:pushState('Healing') end)
 end
@@ -42,6 +46,11 @@ function Healing:draw()
   Fay.draw(self)
   local cx, cy = self:getCenter()
   love.graphics.circle('line', cx,cy, self.w/2 + 3)
+end
+
+local Stun = Fay.states.Stun
+function Stun:resetHealingCounter()
+  cron.tagged(self, 'heal').cancel()
 end
 
 return Fay

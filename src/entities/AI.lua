@@ -52,4 +52,7 @@ function AI:getDesiredMovementVector()
   return dx*1000, dy*1000 -- AI always runs at the hightest speed
 end
 
+function AI.states.Stun:think()      end
+function AI.states.Possessed:think() end
+
 return AI

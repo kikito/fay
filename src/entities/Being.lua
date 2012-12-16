@@ -32,6 +32,12 @@ function Being:setTarget(tx,ty)
   self.tx, self.ty = tx,ty
 end
 
+function Being:getDistanceToTarget()
+  local cx,cy = self:getCenter()
+  local dx,dy = self.tx - cx, self.ty - cy
+  return math.sqrt(dx*dx + dy*dy)
+end
+
 function Being:shouldCollide(other)
   return self:isSolid() and other:isSolid()
 end
@@ -93,8 +99,22 @@ local Stun = Being:addState('Stun')
 function Stun:update()
 end
 
-
-
+local Possessed = Being:addState('Possessed')
+function Possessed:update(dt)
+  Being.update(self, dt)
+end
+function Possessed:blow(other)
+  if self.possessor then
+    self.possessor:gotoState('Unblinking')
+    self.possessor = nil
+  end
+  self:gotoState('Pursuing')
+  self.class.blow(other)
+end
+function Possessed:die()
+  self.possessor:gotoState('Unblinking')
+  self.class.die(self)
+end
 
 return Being
 

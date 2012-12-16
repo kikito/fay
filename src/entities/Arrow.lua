@@ -9,14 +9,14 @@ local Arrow = class('Arrow', Entity)
 local function min(a,b) return a < b and a or b end
 local function max(a,b) return a > b and a or b end
 
-function Arrow:initialize(origin, target)
+function Arrow:initialize(origin, tx,ty)
   local cx, cy = origin:getCenter()
-  local tx, ty = target:getCenter()
+  self.ox, self.oy = cx,cy
+  self.tx, self.ty = tx,ty
+
   local l,t = min(cx,tx), min(cy,ty)
   local r,b = max(cx,tx), max(cy,ty)
   Entity.initialize(self, l,t,r-l,b-t)
-  self.ox, self.oy = cx,cy
-  self.tx, self.ty = tx,ty
 
   bump.eachInSegment(cx,cy,tx,ty, function(item, x,y)
     if item ~= origin and item:isSolid() then

@@ -32,7 +32,7 @@ local function initializeBump()
   end
 end
 
-function initializeBeholder()
+function initializeBeholder(self)
   beholder.group(world, function()
     beholder.observe('gameover', function()
       self:gotoState('GameOver')
@@ -53,7 +53,7 @@ function Play:enteredState()
   initializeBump()
   world  = World:new()
   cam    = gamera.new(World:getBoundaries())
-  initializeBeholder()
+  initializeBeholder(self)
 end
 
 function Play:exitedState()

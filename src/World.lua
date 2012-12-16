@@ -23,13 +23,13 @@ function World:initialize()
   for i=1,40 do
     entities.Knight:new(rand(100, WIDTH-100),
                         rand(100, HEIGHT-100),
-                        self.player)
+                        self.player.body)
   end
 
   for i=1,50 do
     entities.Archer:new(rand(100, WIDTH-100),
                         rand(100, HEIGHT-100),
-                        self.player)
+                        self.player.body)
   end
 end
 
