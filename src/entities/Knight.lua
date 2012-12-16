@@ -22,10 +22,9 @@ end
 
 function Knight:blow(other)
   self.energy = self.energy - 0.25
-  if self.energy < 0 then
+  if self.energy <= 0 then
     self:die()
   else
-    self:gotoState('Pursuing')
     self.target = other
   end
 end
@@ -86,6 +85,10 @@ function Attacking:enteredState()
     Blow:new(self, x,y)
     self:popState('Attacking')
   end)
+end
+
+function Attacking:attack()
+  -- can not cancel current attack until finished
 end
 
 function Attacking:update(dt)

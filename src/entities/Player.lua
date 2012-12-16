@@ -51,9 +51,6 @@ function Player:isOpaque()      return false end
 function Player:collision()                  end
 
 local Unblinking = Player:addState('Unblinking')
-function Unblinking:enteredState()
-  self:setTarget(self.body:getCenter())
-end
 function Unblinking:update(dt)
   Being.update(self, dt)
   if self:getDistanceToTarget() < 20 then
@@ -63,10 +60,8 @@ function Unblinking:update(dt)
     self:gotoState()
   end
 end
-function Unblinking:setTarget(x,y)
-  -- do nothing while blinking/unblinking
-end
 function Unblinking:getDesiredMovementVector()
+  self:setTarget(self.body:getCenter())
   local dx,dy = Player.getDesiredMovementVector(self)
   return dx*100, dy*100 -- don't aminorate when reaching target
 end
@@ -86,6 +81,11 @@ function Blinking:collision(other)
   other.possessor = self
   other:gotoState('Possessed')
   self:gotoState('Possessing')
+end
+
+function Blinking:getDesiredMovementVector()
+  local dx, dy = Player.getDesiredMovementVector(self)
+  return dx*100, dy*100
 end
 
 local Possessing = Player:addState('Possessing')

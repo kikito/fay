@@ -23,10 +23,9 @@ end
 
 function Archer:blow(other)
   self.energy = self.energy - 0.34
-  if self.energy < 0 then
+  if self.energy <= 0 then
     self:die()
   else
-    self:gotoState('Pursuing')
     self.target = other
   end
 end
@@ -41,6 +40,7 @@ end
 
 function Archer:attack(x,y)
   self.attackX, self.attackY = x,y
+  cron.tagged(self, 'shoot').cancel()
   self:pushState('Shooting')
 end
 
@@ -112,7 +112,7 @@ function Shooting:draw()
 end
 
 function Shooting:enteredState()
-  cron.tagged(self, 'shoot').after(2.5, function()
+  cron.tagged(self, 'shoot').after(1, function()
     Arrow:new(self, self.attackX, self.attackY)
     self:popState('Shooting')
   end)

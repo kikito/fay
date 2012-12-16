@@ -104,12 +104,13 @@ function Possessed:update(dt)
   Being.update(self, dt)
 end
 function Possessed:blow(other)
+  self.class.blow(other)
   if self.possessor then
     self.possessor:gotoState('Unblinking')
     self.possessor = nil
   end
+  self.target = other
   self:gotoState('Pursuing')
-  self.class.blow(other)
 end
 function Possessed:die()
   self.possessor:gotoState('Unblinking')
