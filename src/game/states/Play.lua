@@ -32,21 +32,35 @@ local function initializeBump()
   end
 end
 
+function initializeBeholder()
+  beholder.group(world, function()
+    beholder.observe('gameover', function()
+      self:gotoState('GameOver')
+    end)
+    beholder.observe('mousepressed', 'l', function(x,y)
+      beholder.trigger('player', 'primary', cam:toWorld(x, y))
+    end)
+    beholder.observe('mousepressed', 'r', function()
+      beholder.trigger('player', 'secondary')
+    end)
+    beholder.observe('keypressed', 'space', function()
+      beholder.trigger('player', 'secondary')
+    end)
+  end)
+end
+
 function Play:enteredState()
   initializeBump()
-  world            = World:new()
-  cam              = gamera.new(World:getBoundaries())
-  gameOverEventId  = beholder.observe('gameover', function()
-    self:gotoState('GameOver')
-  end)
+  world  = World:new()
+  cam    = gamera.new(World:getBoundaries())
+  initializeBeholder()
 end
 
 function Play:exitedState()
   world:destroy()
-  beholder.stopObserving(gameOverEventId)
+  beholder.stopObserving(world)
   world, cam, gameOverEventId = nil, nil, nil
 end
-
 
 function Play:draw()
   cam:draw(function(l,t,w,h)

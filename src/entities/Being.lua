@@ -89,6 +89,10 @@ end
 function Dead:update()
 end
 
+local Stun = Being:addState('Stun')
+function Stun:update()
+end
+
 
 
 

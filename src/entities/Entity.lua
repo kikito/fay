@@ -15,19 +15,11 @@ function Entity:getBBox()
   return self.l, self.t, self.w, self.h
 end
 
-function Entity:shouldCollide(other)
-  return false
-end
+function Entity:shouldCollide(other) return false end
 
-function Entity:collision(other, dx,dy)
-end
+function Entity:collision(other, dx,dy) end
 
-function Entity:endCollision(other)
-end
-
-function Entity:getCenter()
-  return self.l + self.w*0.5, self.t + self.h*0.5
-end
+function Entity:endCollision(other) end
 
 function Entity:isOpaque()
   return true -- by default, everything is opaque
@@ -35,6 +27,14 @@ end
 
 function Entity:isSolid()
   return true -- for now it only worls for stucking arrows
+end
+
+function Entity:getCenter()
+  return self.l + self.w*0.5, self.t + self.h*0.5
+end
+
+function Entity:setCenter(x,y)
+  self.l, self.t = x - self.w*0.5, y - self.h*0.5
 end
 
 function Entity:vectorTo(other)

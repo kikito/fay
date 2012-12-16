@@ -2,6 +2,7 @@ require 'lib.require'
 require 'lib.middleclass'
 local cron     = require 'lib.cron'
 local beholder = require 'lib.beholder'
+local tween    = require 'lib.tween'
 
 -- game & gamestate requires
 local Game = require 'game'
@@ -18,6 +19,7 @@ end
 
 function love.update(dt)
   cron.update(dt)
+  tween.update(dt)
   game:update(dt)
 end
 
