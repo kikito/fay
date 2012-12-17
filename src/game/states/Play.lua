@@ -73,7 +73,8 @@ function Play:draw()
 end
 
 function Play:update(dt)
-  world.player:setTarget(cam:toWorld(love.mouse.getPosition()))
+  local tx,ty = cam:toWorld(love.mouse.getPosition())
+  world.player:setGoal(tx,ty)
   world:update(dt, cam:getVisible())
   if cam then cam:setPosition(world.player:getCenter()) end
 end

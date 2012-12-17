@@ -11,7 +11,8 @@ local WIDTH, HEIGHT = 4000,4000
 local MAX_TILE_W, MAX_TILE_H = 200,200
 
 function World:initialize()
-  self.player = entities.Player:new(100,100)
+  local fay   = entities.Fay:new(100,100)
+  self.player = fay.mind
 
   for i=1,200 do
     entities.Tile:new(rand(0, WIDTH-MAX_TILE_W),
@@ -23,13 +24,13 @@ function World:initialize()
   for i=1,40 do
     entities.Knight:new(rand(100, WIDTH-100),
                         rand(100, HEIGHT-100),
-                        self.player.body)
+                        fay)
   end
 
-  for i=1,50 do
+  for i=1,0 do
     entities.Archer:new(rand(100, WIDTH-100),
                         rand(100, HEIGHT-100),
-                        self.player.body)
+                        fay)
   end
 end
 
@@ -42,7 +43,7 @@ function World:destroy()
   entities.Entity:safeEach('destroy')
 end
 
-local function sortForDrawing(a,b)
+local function sortOnScreen(a,b)
   if a.z == b.z then
     local _,ay = a:getCenter()
     local _,by = b:getCenter()
@@ -51,22 +52,35 @@ local function sortForDrawing(a,b)
   return a.z < b.z
 end
 
-function World:draw(l,t,w,h)
-  onScreen = {}
+local function updateOnScreen(l,t,w,h)
   local length = 0
+  onScreen = {}
   bump.eachInRegion(l,t,w,h, function(item)
     length = length + 1
     onScreen[length] = item
   end)
-  table.sort(onScreen, sortForDrawing)
-  for _,visible in ipairs(onScreen) do visible:draw() end
+  table.sort(onScreen, sortOnScreen)
+end
+
+function World:draw(l,t,w,h)
+  for _,item in ipairs(onScreen) do item:draw() end
 end
 
 function World:update(dt, l,t,w,h)
-  bump.eachInRegion(l,t,w,h, function(item)
-    item:update(dt, onScreen)
-  end)
-  bump.collide()
+  updateOnScreen(l,t,w,h)
+  for _,item in ipairs(onScreen) do
+    if instanceOf(entities.AI, item) or instanceOf(entities.Player, item) then
+      item:update(dt, onScreen)
+    end
+  end
+
+  for _,item in ipairs(onScreen) do
+    if not instanceOf(entities.AI, item) and not instanceOf(entities.Player, item) then
+      item:update(dt)
+    end
+  end
+
+  bump.collide(l,t,w,h)
 end
 
 return World
