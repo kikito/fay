@@ -19,11 +19,11 @@ function require.tree(requirePath)
     local result = {}
 
     local fsPath = toFSPath(requirePath)
-    local entries = lfs.enumerate(fsPath)
+    local entries = lfs.getDirectoryItems(fsPath)
 
     for _,entry in ipairs(entries) do
       fsPath = toFSPath(requirePath .. '.' .. entry)
-      if lfs.isDirectory(fsPath) then
+      if lfs.getInfo(fsPath, 'directory') then
         result[entry] = require.tree(toRequirePath(fsPath))
       else
         entry = noExtension(entry)
@@ -47,5 +47,3 @@ function require.relative(...)
   local path = require.path(first)
   return require(path .. '.' .. last)
 end
-
-
